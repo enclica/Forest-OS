@@ -1,2 +1,2 @@
 # Forest-OS
-A operating system made by CSOFTWARE.
+A operating system made by enclica.
