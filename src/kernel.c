@@ -8,8 +8,8 @@ void start()
 	isr_install();
     
 	clearScreen();
-	print("MODRICK OS KERNEL\n");
-    	print("modrickLOGIN>$~\n");
+	print("Forest OS KERNEL\n");
+    	print(">$~\n");
     print("logged in as 'root'\n");
     launch_shell(0);    
 }

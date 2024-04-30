@@ -7,7 +7,7 @@ COMPILER = gcc
 # Directories
 SRCDIR = src
 OBJDIR = obj
-OUTDIR = Forest/boot
+OUTDIR = iso
 OUTPUT = $(OUTDIR)/kernel.bin
 LOGDIR = logs
 
@@ -55,11 +55,7 @@ $(OUTPUT): $(OBJS)
 	/error/ { print red $$0 nc; next } \
 	/warning/ { print yellow $$0 nc; next } \
 	{ print } END { if (ec != 0) exit ec }'
-	@if [ "$$ec" -eq 0 ]; then \
-		echo "$(OK_COLOR)Kernel binary linked successfully.$(NO_COLOR)"; \
-	else \
-		echo "$(ERROR_COLOR)Error linking kernel binary. See log file $(LOGDIR)/linking.log for details.$(NO_COLOR)" && false; \
-	fi
+	
 
 
 
@@ -69,24 +65,14 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.c
 	@echo "$(OK_COLOR)Compiling $<...$(NO_COLOR)"
 	mkdir -p $(OBJDIR)
 	$(COMPILER) $(CFLAGS) -o $@ $< > $(LOGDIR)/compile_$*.log 2>&1
-	@if [ $$? -eq 0 ]; then \
-		echo "$(OK_COLOR)Compiled $< successfully.$(NO_COLOR)"; \
-	else \
-		echo "$(ERROR_COLOR)Compilation failed. See log file $(LOGDIR)/compile_$*.log for details.$(NO_COLOR)"; \
-		exit 1; \
-	fi
+	
 
 # Assembling ASM Sources
 $(OBJDIR)/%.o: $(SRCDIR)/%.asm
 	@echo "$(OK_COLOR)Assembling $<...$(NO_COLOR)"
 	mkdir -p $(OBJDIR)
 	$(ASSEMBLER) $(ASFLAGS) -o $@ $< > $(LOGDIR)/assemble_$*.log 2>&1
-	@if [ $$? -eq 0 ]; then \
-		echo "$(OK_COLOR)Assembled $< successfully.$(NO_COLOR)"; \
-	else \
-		echo "$(ERROR_COLOR)Assembly failed. See log file $(LOGDIR)/assemble_$*.log for details.$(NO_COLOR)"; \
-		exit 1; \
-	fi
+	
 
 
 # Run the Emulator
@@ -112,7 +98,9 @@ build: all
 	@echo "$(OK_COLOR)Building ISO image...$(NO_COLOR)"
 	mkdir -p $(OUTDIR)/users/root
 	mkdir -p $(OUTDIR)/grub
-	echo "set default=0\nset timeout=4\nmenuentry 'Forest' {\n set root='(hd96)'\n multiboot /boot/kernel.bin\n}" > $(OUTDIR)/grub/grub.cfg
+	
+	# copy grub config from Grub to Forest/boot/grub
+	cp Grub/* $(OUTDIR)/grub/*.*
 	grub-mkrescue -o Forest.iso $(OUTDIR)
 	@echo "$(OK_COLOR)ISO image built successfully.$(NO_COLOR)"
 

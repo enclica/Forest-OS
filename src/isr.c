@@ -38,6 +38,11 @@ void isr_install() {
     set_idt_gate(31, (uint32)isr31);
 
     set_idt(); // Load with ASM
+
+    // Output verbose with print
+    for (int i = 0; i < 32; i++) {
+        print(exception_messages[i]);
+    }
 }
 
 /*Handlers*/
