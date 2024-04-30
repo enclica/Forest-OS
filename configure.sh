@@ -7,3 +7,8 @@ sudo apt-get install -y llvm
 sudo apt-get install -y clang
 sudo apt-get install -y cmake
 sudo apt-get install -y libboost-all-dev
+
+mkdir -p obj
+mkdir -p logs
+mkdir -p Forest
+mkdir -p Forest/boot
