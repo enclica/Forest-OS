@@ -74,7 +74,7 @@ void printch(char c)
                         vidmem[(cursorY * sw + cursorX)*sd]=0;	     //(0xF0 & color)                          
 	        }
 	        break;
-        case (0x09):
+       case (0x09):
                 cursorX = (cursorX + 8) & ~(8 - 1); 
                 break;
         case ('\r'):
@@ -101,26 +101,17 @@ void printch(char c)
 }
 
 void print (string ch)
-{       
-        ch[-1] = "\n";
+{
         uint16 i = 0;
-        uint8 length = strlength(ch);  
-                 
+        uint8 length = strlength(ch);              //Updated (Now we store string length on a variable to call the function only once)
         for(i;i<length;i++)
         {
                 printch(ch[i]);
         }
-
+       /* while((ch[i] != (char)0) && (i<=length))
+                print(ch[i++]);*/
         
 }
-void printl (string ch)
-{       
-        print("\n");
-        print(ch);
-        print("\n");
-        
-}
-
 void set_screen_color(int text_color,int bg_color)
 {
 	color =  (bg_color << 4) | text_color;;

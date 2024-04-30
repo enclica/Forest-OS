@@ -1,62 +1,140 @@
+
+
+
+# Compiler
 COMPILER = gcc
+
+# Directories
+SRCDIR = src
+OBJDIR = obj
+OUTDIR = Forest/boot
+OUTPUT = $(OUTDIR)/kernel.bin
+LOGDIR = logs
+
+# Linker, Assembler, Compiler, and Emulator
 LINKER = ld
 ASSEMBLER = nasm
-CFLAGS = -m32 -c -ffreestanding
+CFLAGS = -Wall -m32 -c -I include -fno-stack-protector --verbose
 ASFLAGS = -f elf32
-LDFLAGS = -m elf_i386 -T src/link.ld
-EMULATOR = qemu
+LDFLAGS = -m elf_i386 -T $(SRCDIR)/link.ld --allow-multiple-definition
+EMULATOR = qemu-system-i386
 EMULATOR_FLAGS = -kernel
 
-OBJS = obj/kasm.o obj/kc.o obj/idt.o obj/isr.o obj/kb.o obj/screen.o obj/string.o obj/system.o obj/util.o obj/shell.o
-OUTPUT = forest/boot/kernel.bin
+# Color settings for logs
+NO_COLOR=\033[0m
+OK_COLOR=\033[32;01m
+ERROR_COLOR=\033[31;01m
+WARN_COLOR=\033[33;01m
 
-run: all
-	$(EMULATOR) $(EMULATOR_FLAGS) $(OUTPUT)
+# Echo colored messages
+ECHO_OK=@echo "$(OK_COLOR)"
+ECHO_ERROR=@echo "$(ERROR_COLOR)"
+ECHO_WARN=@echo "$(WARN_COLOR)"
+ECHO_NO_COLOR=@echo "$(NO_COLOR)"
 
-all:$(OBJS)
+# Source and Object Files
+CSOURCES = $(wildcard $(SRCDIR)/*.c)
+ASMSOURCES = $(wildcard $(SRCDIR)/*.asm)
+COBJECTS = $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(CSOURCES))
+ASMOBJECTS = $(patsubst $(SRCDIR)/%.asm, $(OBJDIR)/%.o, $(ASMSOURCES))
+OBJS = $(COBJECTS) $(ASMOBJECTS)
 
-	$(LINKER) $(LDFLAGS) -o $(OUTPUT) $(OBJS)
 
-obj/kasm.o:src/kernel.asm
-	$(ASSEMBLER) $(ASFLAGS) -o obj/kasm.o src/kernel.asm
-	
-obj/kc.o:src/kernel.c
-	$(COMPILER) $(CFLAGS) src/kernel.c -o obj/kc.o 
-	
-obj/idt.o:src/idt.c
-	$(COMPILER) $(CFLAGS) src/idt.c -o obj/idt.o 
+all: $(OUTPUT)
+	$(ECHO_OK) "Build complete.$(NO_COLOR)"
 
-obj/kb.o:src/kb.c
-	$(COMPILER) $(CFLAGS) src/kb.c -o obj/kb.o
 
-obj/isr.o:src/isr.c
-	$(COMPILER) $(CFLAGS) src/isr.c -o obj/isr.o
+# Default Target
+# Linking the Kernel Binary
+$(OUTPUT): $(OBJS)
+	@echo "$(OK_COLOR)Linking kernel binary...$(NO_COLOR)"
+	mkdir -p $(OUTDIR)
+	@{ $(LINKER) $(LDFLAGS) -o $@ $^ 2>&1; ec=$$?; } | tee $(LOGDIR)/linking.log | \
+	awk 'BEGIN { red = "\033[31;01m"; yellow = "\033[33;01m"; nc = "\033[0m" } \
+	/error: undefined reference/ { print red "Undefined reference: " $$0 nc; next } \
+	/error/ { print red $$0 nc; next } \
+	/warning/ { print yellow $$0 nc; next } \
+	{ print } END { if (ec != 0) exit ec }'
+	@if [ "$$ec" -eq 0 ]; then \
+		echo "$(OK_COLOR)Kernel binary linked successfully.$(NO_COLOR)"; \
+	else \
+		echo "$(ERROR_COLOR)Error linking kernel binary. See log file $(LOGDIR)/linking.log for details.$(NO_COLOR)" && false; \
+	fi
 
-obj/screen.o:src/screen.c
-	$(COMPILER) $(CFLAGS) src/screen.c -o obj/screen.o
 
-obj/string.o:src/string.c
-	$(COMPILER) $(CFLAGS) src/string.c -o obj/string.o
 
-obj/system.o:src/system.c
-	$(COMPILER) $(CFLAGS) src/system.c -o obj/system.o
 
-obj/util.o:src/util.c
-	$(COMPILER) $(CFLAGS) src/util.c -o obj/util.o
-	
-obj/shell.o:src/shell.c
-	$(COMPILER) $(CFLAGS) src/shell.c -o obj/shell.o
+# Compiling C Sources
+$(OBJDIR)/%.o: $(SRCDIR)/%.c
+	@echo "$(OK_COLOR)Compiling $<...$(NO_COLOR)"
+	mkdir -p $(OBJDIR)
+	$(COMPILER) $(CFLAGS) -o $@ $< > $(LOGDIR)/compile_$*.log 2>&1
+	@if [ $$? -eq 0 ]; then \
+		echo "$(OK_COLOR)Compiled $< successfully.$(NO_COLOR)"; \
+	else \
+		echo "$(ERROR_COLOR)Compilation failed. See log file $(LOGDIR)/compile_$*.log for details.$(NO_COLOR)"; \
+		exit 1; \
+	fi
 
-build:all
-	#sudo apt-get install xorriso
-	grub-mkrescue -o forest.iso forest/
-	
-clear:
-	rm -f obj/*.o
+# Assembling ASM Sources
+$(OBJDIR)/%.o: $(SRCDIR)/%.asm
+	@echo "$(OK_COLOR)Assembling $<...$(NO_COLOR)"
+	mkdir -p $(OBJDIR)
+	$(ASSEMBLER) $(ASFLAGS) -o $@ $< > $(LOGDIR)/assemble_$*.log 2>&1
+	@if [ $$? -eq 0 ]; then \
+		echo "$(OK_COLOR)Assembled $< successfully.$(NO_COLOR)"; \
+	else \
+		echo "$(ERROR_COLOR)Assembly failed. See log file $(LOGDIR)/assemble_$*.log for details.$(NO_COLOR)"; \
+		exit 1; \
+	fi
 
+
+# Run the Emulator
+run: $(OUTPUT)
+	@echo "$(OK_COLOR)Running emulator...$(NO_COLOR)"
+	$(EMULATOR) $(EMULATOR_FLAGS) $<
+	@echo "$(OK_COLOR)Emulator started.$(NO_COLOR)"
+
+open_iso:
+	@echo "$(OK_COLOR)Opening ISO file...$(NO_COLOR)"
+	$(EMULATOR) -cdrom Forest.iso
+	@echo "$(OK_COLOR)ISO file opened.$(NO_COLOR)"
+
+
+# Clean up Objects and Output Directories
 clean:
-	rm -f obj/*.o
+	@echo "$(WARN_COLOR)Cleaning up...$(NO_COLOR)"
+	rm -rf $(OBJDIR)/*.o $(OUTDIR)/*.* $(LOGDIR)/*.* Forest.iso
+	@echo "$(OK_COLOR)Clean complete.$(NO_COLOR)"
+
+# ISO and GRUB Configuration
+build: all
+	@echo "$(OK_COLOR)Building ISO image...$(NO_COLOR)"
+	mkdir -p $(OUTDIR)/users/root
+	mkdir -p $(OUTDIR)/grub
+	echo "set default=0\nset timeout=4\nmenuentry 'Forest' {\n set root='(hd96)'\n multiboot /boot/kernel.bin\n}" > $(OUTDIR)/grub/grub.cfg
+	grub-mkrescue -o Forest.iso $(OUTDIR)
+	@echo "$(OK_COLOR)ISO image built successfully.$(NO_COLOR)"
+
+
+make_and_build: all build
+
+clean_and_build: clean all build
+
+
+
+
+
+# Help
 help:
-	echo "FOREST OS ALDER HELP.... \nrun run in a emulator.\nall the defaut command for building\nbuild the main build command"
-	
-	
+	@echo "Makefile for compiling and running a simple OS kernel"
+	@echo "Targets:"
+	@echo "  all: Builds the kernel binary"
+	@echo "  run: Runs the kernel in QEMU"
+	@echo "  open_iso: Opens the ISO file in QEMU"
+	@echo "  clean: Removes all generated files"
+	@echo "  build: Creates a bootable ISO image"#
+	@echo "  make_and_build: Builds the kernel and creates a bootable ISO image"
+	@echo "  clean_and_build: Cleans up and builds the kernel and creates a bootable ISO image"
+	@echo "  help: Displays this help message"
+

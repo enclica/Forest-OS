@@ -1,0 +1,17 @@
+{
+    "files.associations": {
+        ".fantomasignore": "ignore",
+        "kb.h": "c",
+        "stdio.h": "c",
+        "util.h": "c",
+        "idt.h": "c",
+        "isr.h": "c",
+        "string": "c",
+        "format": "c",
+        "iosfwd": "c",
+        "string.h": "c",
+        "shell.h": "c",
+        "cstdio": "c",
+        "screen.h": "c"
+    }
+}

@@ -2,4 +2,6 @@
 A operating system made by enclica.
 
 
-# outdated source | switching to linux kernel.
+# Building
+
+```make build```

@@ -1,7 +1,4 @@
 
-//keyboard driver
-
-
 #include "../include/kb.h"
 string readStr()
 {
@@ -15,6 +12,11 @@ string readStr()
         {
             switch(inportb(0x60))
             { 
+      
+                printch((char)27);          
+                buffstr[i] = (char)27;
+                i++;
+                break;
         case 2:
                 printch('1');
                 buffstr[i] = '1';
@@ -85,11 +87,11 @@ string readStr()
                 buffstr[i+1] = 0;
                 buffstr[i] = 0;
                 break;
-        case 15:
-                printch('\t');          
+       /* case 15:
+                printch('\t');          Tab button
                 buffstr[i] = '\t';
                 i++;
-                break;
+                break;*/
         case 16:
                 printch('q');
                 buffstr[i] = 'q';
@@ -151,16 +153,16 @@ string readStr()
                 i++;
                 break;
         case 28:
-                printch('\n');
-                buffstr[i] = '\n';
+               // printch('\n');
+               // buffstr[i] = '\n';
                   i++;
                reading = 0;
                 break;
-        case 29:
-                printch('q');          
+      /*  case 29:
+                printch('q');           Left Control
                 buffstr[i] = 'q';
                 i++;
-                break;
+                break;*/
         case 30:
                 printch('a');
                 buffstr[i] = 'a';
@@ -212,23 +214,23 @@ string readStr()
                 i++;
                 break;
         case 40:
-                printch((char)44);               
+                printch((char)44);               //   Single quote (')
                 buffstr[i] = (char)44;
                 i++;
                 break;
         case 41:
-                printch((char)44);               
+                printch((char)44);               // Back tick (`)
                 buffstr[i] = (char)44;
                 i++;
                 break;
-        case 42:                                  
+                                 
                 printch('q');
                 buffstr[i] = 'q';
                 i++;
                 break;
         case 43:                                 
                 printch((char)92);
-                buffstr[i] = 'q';
+                buffstr[i] = '8';
                 i++;
                 break;
         case 44:
@@ -275,30 +277,26 @@ string readStr()
                 printch('.');
                 buffstr[i] = '.';
                 i++;
-                break;            
-        case 53:
-                printch('/');
-                buffstr[i] = '/';
-                i++;
-                break;            
+                break;          
         case 54:
                 printch('.');
                 buffstr[i] = '.';
                 i++;
                 break;            
-        case 55:
-                printch('/');
-                buffstr[i] = '/';
-                i++;
-                break;            
-        case 56:
+           
+      case 56:
                 printch(' ');           
                 buffstr[i] = ' ';
                 i++;
-                break;        
+                break;         
         case 57:
-                printch(' ');
-                buffstr[i] = ' ';
+                printch('/');
+                buffstr[i] = '/';
+                i++;
+                break;
+        case 58:
+                printch('^');
+                buffstr[i] = '^';
                 i++;
                 break;
             }
