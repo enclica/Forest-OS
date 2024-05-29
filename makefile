@@ -1,6 +1,3 @@
-
-
-
 # Compiler
 COMPILER = gcc
 
@@ -39,10 +36,8 @@ COBJECTS = $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(CSOURCES))
 ASMOBJECTS = $(patsubst $(SRCDIR)/%.asm, $(OBJDIR)/%.o, $(ASMSOURCES))
 OBJS = $(COBJECTS) $(ASMOBJECTS)
 
-
 all: $(OUTPUT)
 	$(ECHO_OK) "Build complete.$(NO_COLOR)"
-
 
 # Default Target
 # Linking the Kernel Binary
@@ -55,25 +50,18 @@ $(OUTPUT): $(OBJS)
 	/error/ { print red $$0 nc; next } \
 	/warning/ { print yellow $$0 nc; next } \
 	{ print } END { if (ec != 0) exit ec }'
-	
-
-
-
 
 # Compiling C Sources
 $(OBJDIR)/%.o: $(SRCDIR)/%.c
 	@echo "$(OK_COLOR)Compiling $<...$(NO_COLOR)"
 	mkdir -p $(OBJDIR)
 	$(COMPILER) $(CFLAGS) -o $@ $< > $(LOGDIR)/compile_$*.log 2>&1
-	
 
 # Assembling ASM Sources
 $(OBJDIR)/%.o: $(SRCDIR)/%.asm
 	@echo "$(OK_COLOR)Assembling $<...$(NO_COLOR)"
 	mkdir -p $(OBJDIR)
 	$(ASSEMBLER) $(ASFLAGS) -o $@ $< > $(LOGDIR)/assemble_$*.log 2>&1
-	
-
 
 # Run the Emulator
 run: $(OUTPUT)
@@ -85,7 +73,6 @@ open_iso:
 	@echo "$(OK_COLOR)Opening ISO file...$(NO_COLOR)"
 	$(EMULATOR) -cdrom Forest.iso
 	@echo "$(OK_COLOR)ISO file opened.$(NO_COLOR)"
-
 
 # Clean up Objects and Output Directories
 clean:
@@ -100,18 +87,13 @@ build: all
 	mkdir -p $(OUTDIR)/grub
 	
 	# copy grub config from Grub to Forest/boot/grub
-	cp Grub/* $(OUTDIR)/grub/*.*
+	cp Grub/* $(OUTDIR)/grub/
 	grub-mkrescue -o Forest.iso $(OUTDIR)
 	@echo "$(OK_COLOR)ISO image built successfully.$(NO_COLOR)"
-
 
 make_and_build: all build
 
 clean_and_build: clean all build
-
-
-
-
 
 # Help
 help:
@@ -121,8 +103,17 @@ help:
 	@echo "  run: Runs the kernel in QEMU"
 	@echo "  open_iso: Opens the ISO file in QEMU"
 	@echo "  clean: Removes all generated files"
-	@echo "  build: Creates a bootable ISO image"#
+	@echo "  build: Creates a bootable ISO image"
 	@echo "  make_and_build: Builds the kernel and creates a bootable ISO image"
 	@echo "  clean_and_build: Cleans up and builds the kernel and creates a bootable ISO image"
 	@echo "  help: Displays this help message"
 
+# Check for required dependencies
+check_deps:
+	@command -v $(COMPILER) >/dev/null 2>&1 || { echo >&2 "$(ERROR_COLOR)gcc is required but it's not installed. Aborting.$(NO_COLOR)"; exit 1; }
+	@command -v $(ASSEMBLER) >/dev/null 2>&1 || { echo >&2 "$(ERROR_COLOR)nasm is required but it's not installed. Aborting.$(NO_COLOR)"; exit 1; }
+	@command -v $(LINKER) >/dev/null 2>&1 || { echo >&2 "$(ERROR_COLOR)ld is required but it's not installed. Aborting.$(NO_COLOR)"; exit 1; }
+	@command -v grub-mkrescue >/dev/null 2>&1 || { echo >&2 "$(ERROR_COLOR)grub-mkrescue is required but it's not installed. Aborting.$(NO_COLOR)"; exit 1; }
+	@command -v mformat >/dev/null 2>&1 || { echo >&2 "$(ERROR_COLOR)mtools is required but it's not installed. Aborting.$(NO_COLOR)"; exit 1; }
+
+.PHONY: all clean run open_iso build make_and_build clean_and_build help check_deps
