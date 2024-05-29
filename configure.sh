@@ -28,5 +28,12 @@ mkdir -p iso/themes/default/sounds/
 
 cp -r Sounds/* iso/themes/default/sounds/
 
-# Copy the grub.cfg file to the iso/boot/grub directory#
-cp Grub/grub.cfg iso/boot/grub/grub.cfg
+# Copy the grub.cfg file to the iso/boot/grub directory if the directory exists
+if [ -d "iso/boot/grub" ]; then
+
+    if [ -f "Grub/grub.cfg" ]; then
+        cp Grub/grub.cfg iso/boot/grub/grub.cfg
+    else
+        echo "Grub/grub.cfg file does not exist"
+    fi
+fi

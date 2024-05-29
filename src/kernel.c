@@ -4,7 +4,7 @@
 #include "../include/util.h"
 #include "../include/shell.h"
 
-void start(){
+void startk(){
 		isr_install();
 
 		kmain();
