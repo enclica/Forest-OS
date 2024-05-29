@@ -5,3 +5,5 @@ Forest/boot/*
 Forest.iso
 /.vscode
 .vscode/settings.json
+iso/boot/grub/grub.cfg
+iso.iso
