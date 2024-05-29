@@ -5,7 +5,8 @@ COMPILER = gcc
 SRCDIR = src
 OBJDIR = obj
 OUTDIR = iso
-OUTPUT = $(OUTDIR)/kernel.bin
+BOOTDIR = $(OUTDIR)/boot
+OUTPUT = $(BOOTDIR)/kernel.bin
 LOGDIR = logs
 
 # Linker, Assembler, Compiler, and Emulator
@@ -43,7 +44,7 @@ all: $(OUTPUT)
 # Linking the Kernel Binary
 $(OUTPUT): $(OBJS)
 	@echo "$(OK_COLOR)Linking kernel binary...$(NO_COLOR)"
-	mkdir -p $(OUTDIR)
+	mkdir -p $(BOOTDIR)
 	@{ $(LINKER) $(LDFLAGS) -o $@ $^ 2>&1; ec=$$?; } | tee $(LOGDIR)/linking.log | \
 	awk 'BEGIN { red = "\033[31;01m"; yellow = "\033[33;01m"; nc = "\033[0m" } \
 	/error: undefined reference/ { print red "Undefined reference: " $$0 nc; next } \
@@ -66,7 +67,7 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.asm
 # Run the Emulator
 run: $(OUTPUT)
 	@echo "$(OK_COLOR)Running emulator...$(NO_COLOR)"
-	$(EMULATOR) $(EMULATOR_FLAGS) $<
+	$(EMULATOR) $(EMULATOR_FLAGS) $(OUTPUT)
 	@echo "$(OK_COLOR)Emulator started.$(NO_COLOR)"
 
 open_iso:
@@ -77,7 +78,7 @@ open_iso:
 # Clean up Objects and Output Directories
 clean:
 	@echo "$(WARN_COLOR)Cleaning up...$(NO_COLOR)"
-	rm -rf $(OBJDIR)/*.o $(OUTDIR)/*.* $(LOGDIR)/*.* Forest.iso
+	rm -rf $(OBJDIR)/*.o $(OUTDIR)/* $(LOGDIR)/* Forest.iso
 	@echo "$(OK_COLOR)Clean complete.$(NO_COLOR)"
 
 # ISO and GRUB Configuration
