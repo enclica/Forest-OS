@@ -16,6 +16,8 @@ typedef unsigned long long uint64;
 typedef char* string; 
 
 typedef int bool;
+
+#define float double;
 #define false 0
 #define true  1
 

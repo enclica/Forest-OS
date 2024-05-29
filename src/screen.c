@@ -16,12 +16,12 @@ void updateCursor()
 {
     unsigned temp;
 
-    temp = cursorY * sw + cursorX-1;                                                      // Position = (y * width) +  x
+    temp = cursorY * sw + cursorX-1;                                                      
 
-    outportb(0x3D4, 14);                                                                // CRT Control Register: Select Cursor Location
-    outportb(0x3D5, temp >> 8);                                                         // Send the high byte across the bus
-    outportb(0x3D4, 15);                                                                // CRT Control Register: Select Send Low byte
-    outportb(0x3D5, temp);                                                              // Send the Low byte of the cursor location
+    outportb(0x3D4, 14);                                                                
+    outportb(0x3D5, temp >> 8);                                                         
+    outportb(0x3D4, 15);                                                               
+    outportb(0x3D5, temp);                                                             
 }
 void clearScreen()
 {
@@ -108,8 +108,7 @@ void print (string ch)
         {
                 printch(ch[i]);
         }
-       /* while((ch[i] != (char)0) && (i<=length))
-                print(ch[i++]);*/
+     
         
 }
 void set_screen_color(int text_color,int bg_color)

@@ -24,6 +24,8 @@ mkdir -p iso/themes/default/icons/48x48
 mkdir -p iso/themes/default/icons/64x64
 mkdir -p iso/themes/default/sounds/
 
+
+
 cp -r Sounds/* iso/themes/default/sounds/
 
 # Copy the grub.cfg file to the iso/boot/grub directory#

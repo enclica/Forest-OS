@@ -12,6 +12,9 @@
         "string.h": "c",
         "shell.h": "c",
         "cstdio": "c",
-        "screen.h": "c"
+        "screen.h": "c",
+        "system.h": "c",
+        "types.h": "c",
+        "memory": "c"
     }
 }

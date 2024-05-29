@@ -3,9 +3,17 @@
 #include "../include/idt.h"
 #include "../include/util.h"
 #include "../include/shell.h"
-void start()
+
+void start(){
+		isr_install();
+
+		kmain();
+
+}
+
+void kmain()
 {
-	isr_install();
+
     
 	clearScreen();
 	print("Forest OS KERNEL\n");

@@ -12,9 +12,6 @@ void memory_set(uint8 *dest, uint8 val, uint32 len) {
     for ( ; len != 0; len--) *temp++ = val;
 }
 
-/**
- * K&R implementation
- */
 void int_to_ascii(int n, char str[]) {          
     int i, sign;
     if ((sign = n) < 0) n = -n;

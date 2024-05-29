@@ -1,4 +1,4 @@
-#include <sound.h>
+#include "../include/sound.h"
 
 void sound_init(SoundDriver* driver) {
     // Implementation of sound_init function

@@ -1,7 +1,7 @@
 #include "../include/shell.h"
 
 void shutdown() {
-    print("                        -=shutting down=-                           ");
+    print("\nShutting down...\n");
     for (;;);
 }
 
@@ -90,7 +90,7 @@ void launch_shell(int n) {
         } else if (strEql(ch, "cube")) {
             box();
         } else if (strEql(ch, "modrick")) {
-            modrick();
+          
         } else if (strEql(ch, "exit")) {
             shutdown();
         } else if (strEql(ch, "echo")) {
