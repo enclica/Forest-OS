@@ -32,10 +32,12 @@ ECHO_NO_COLOR=@echo "$(NO_COLOR)"
 
 # Source and Object Files
 CSOURCES = $(wildcard $(SRCDIR)/*.c)
-ASMSOURCES = $(wildcard $(SRCDIR)/*.asm)
+ASMSOURCES = $(filter-out $(SRCDIR)/kernel.asm, $(wildcard $(SRCDIR)/*.asm))
+KERNEL_ASM = $(SRCDIR)/kernel.asm
 COBJECTS = $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(CSOURCES))
 ASMOBJECTS = $(patsubst $(SRCDIR)/%.asm, $(OBJDIR)/%.o, $(ASMSOURCES))
-OBJS = $(COBJECTS) $(ASMOBJECTS)
+KERNEL_ASM_OBJECT = $(OBJDIR)/kernel.o
+OBJS = $(KERNEL_ASM_OBJECT) $(COBJECTS) $(ASMOBJECTS)
 
 all: $(OUTPUT)
 	$(ECHO_OK) "Build complete.$(NO_COLOR)"
@@ -63,6 +65,12 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.asm
 	@echo "$(OK_COLOR)Assembling $<...$(NO_COLOR)"
 	mkdir -p $(OBJDIR)
 	$(ASSEMBLER) $(ASFLAGS) -o $@ $< > $(LOGDIR)/assemble_$*.log 2>&1
+
+# Assembling the Multiboot Header and Kernel Entry
+$(KERNEL_ASM_OBJECT): $(KERNEL_ASM)
+	@echo "$(OK_COLOR)Assembling $<...$(NO_COLOR)"
+	mkdir -p $(OBJDIR)
+	$(ASSEMBLER) $(ASFLAGS) -o $@ $< > $(LOGDIR)/assemble_kernel.log 2>&1
 
 # Run the Emulator
 run: $(OUTPUT)
