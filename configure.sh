@@ -11,8 +11,16 @@ sudo apt-get install -y nasm
 sudo apt-get install -y xorriso
 sudo apt-get install -y grub-pc-bin
 
+sudo apt-get update
+sudo apt-get install mtools
+
+
+#make all the folders
+
 mkdir -p obj
 mkdir -p logs
+
+
 
 mkdir -p iso/boot/grub
 mkdir -p iso/themes/
@@ -23,6 +31,8 @@ mkdir -p iso/themes/default/icons/32x32
 mkdir -p iso/themes/default/icons/48x48
 mkdir -p iso/themes/default/icons/64x64
 mkdir -p iso/themes/default/sounds/
+
+# copy sounds :3
 
 cp -r Sounds/* iso/themes/default/sounds/
 
