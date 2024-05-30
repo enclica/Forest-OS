@@ -21,7 +21,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: build-artifacts
-          path: Forest.iso
+          path: iso.iso
 
   release:
     needs: build
