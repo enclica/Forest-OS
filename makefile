@@ -5,7 +5,7 @@ AS = nasm
 
 # Compiler and Linker Flags
 CFLAGS = -m32 -c -ffreestanding -Wall
-LDFLAGS = -m elf_i386 -T src/link.ld --allow-multiple-definition 
+LDFLAGS = -m elf_i386 -T src/link.ld --allow-multiple-definition
 ASFLAGS = -f elf32
 
 # Colors
@@ -42,12 +42,12 @@ $(OUTPUT): $(COBJECTS) $(ASMOBJECTS)
 	@$(LD) $(LDFLAGS) -o $@ $^
 	@echo "$(OK_COLOR)Kernel binary generated successfully.$(NO_COLOR)"
 
-$(OBJDIR)/%.o:$(SRCDIR)/%.c
+$(OBJDIR)/%.o: $(SRCDIR)/%.c
 	@mkdir -p $(OBJDIR)
 	@echo "$(OK_COLOR)Compiling $<...$(NO_COLOR)"
 	@$(CC) $(CFLAGS) -o $@ $<
 
-$(OBJDIR)/%.o:$(SRCDIR)/%.asm
+$(OBJDIR)/%.o: $(SRCDIR)/%.asm
 	@mkdir -p $(OBJDIR)
 	@echo "$(OK_COLOR)Assembling $<...$(NO_COLOR)"
 	@$(AS) $(ASFLAGS) -o $@ $<
@@ -60,16 +60,10 @@ run: $(ISO)
 # Build ISO Image
 build: all
 	@echo "Building ISO image..."
-	mkdir -p forest/boot/grub
-	echo 'set default=0' > iso/boot/grub/grub.cfg
-	echo 'set timeout=4' >> iso/boot/grub/grub.cfg
-	echo 'menuentry "forest" {' >> iso/boot/grub/grub.cfg
-	echo '    multiboot /boot/kernel.bin' >> iso/boot/grub/grub.cfg
-	echo '    boot' >> iso/boot/grub/grub.cfg
-	echo '}' >> iso/boot/grub/grub.cfg
-	grub-mkrescue -o iso.iso iso/
+	mkdir -p $(GRUBDIR)
+	cp Grub/grub.cfg $(GRUBDIR)/grub.cfg
+	grub-mkrescue -o $(ISO) $(OUTDIR)
 	@echo "ISO image built successfully."
-
 
 # Clean Up
 clean:

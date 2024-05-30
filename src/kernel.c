@@ -4,20 +4,15 @@
 #include "../include/util.h"
 #include "../include/shell.h"
 
-void startk(){
-		isr_install();
-
-		kmain();
-
+void startk() {
+    isr_install();
+    kmain();
 }
 
-void kmain()
-{
-
-    
-	clearScreen();
-	print("Forest OS KERNEL\n");
-    	print(">$~\n");
+void kmain() {
+    clearScreen();
+    print("Forest OS KERNEL\n");
+    print(">$~\n");
     print("logged in as 'root'\n");
     launch_shell(0);    
 }
