@@ -1,5 +1,5 @@
-#include "../include/system.h"
-#include "../include/string.h"
+#include "include/system.h"
+#include "include/string.h"
 uint8 inportb (uint16 _port)
 {
     	uint8 rv;

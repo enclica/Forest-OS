@@ -1,4 +1,4 @@
-#include "../include/string.h"
+#include "include/string.h"
 uint16 strlength(string ch)
 {
         uint16 i = 0;           //Changed counter to 0

@@ -1,5 +1,5 @@
-#include "../include/kb.h"
-#include "../include/isr.h"
+#include "include/kb.h"
+#include "include/isr.h"
 
 
 // Define necessary types

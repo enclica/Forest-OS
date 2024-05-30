@@ -1,4 +1,4 @@
-#include "../include/shell.h"
+#include "include/shell.h"
 
 void shutdown() {
     print("\nShutting down...\n");
