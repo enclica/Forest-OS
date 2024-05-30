@@ -11,7 +11,7 @@ sudo apt-get install -y nasm
 sudo apt-get install -y xorriso
 sudo apt-get install -y grub-pc-bin
 sudo apt-get install -y libc6-dev
-
+sudo apt-get install -y mtools
 mkdir -p obj
 mkdir -p logs
 
